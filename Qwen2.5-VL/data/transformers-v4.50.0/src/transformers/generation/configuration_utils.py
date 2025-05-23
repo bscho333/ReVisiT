@@ -94,6 +94,8 @@ class GenerationMode(ExplicitEnum):
     CONSTRAINED_BEAM_SEARCH = "constrained_beam_search"
     GROUP_BEAM_SEARCH = "group_beam_search"
 
+    REVISIT="revisit"
+
 
 class GenerationConfig(PushToHubMixin):
     # no-format
@@ -407,6 +409,11 @@ class GenerationConfig(PushToHubMixin):
         self.penalty_alpha = kwargs.pop("penalty_alpha", None)
         self.dola_layers = kwargs.pop("dola_layers", None)
 
+        self.use_revisit = kwargs.pop("use_revisit", False)
+        self.image_tokens = kwargs.pop("image_tokens", None)
+        self.early_exit_layers = kwargs.pop("early_exit_layers", "all")
+        self.relative_top = kwargs.pop("relative_top", 1e-5)
+
         # Parameters that control the cache
         self.use_cache = kwargs.pop("use_cache", True)
         self.cache_implementation = kwargs.pop("cache_implementation", None)
@@ -580,6 +587,14 @@ class GenerationConfig(PushToHubMixin):
             else:
                 raise ValueError(
                     "You've set `dola_layers`, which triggers DoLa generate. Currently, DoLa generate "
+                    "is only supported with Greedy Search and Sample."
+                )
+        if self.use_revisit:
+            if generation_mode in ("greedy_search", "sample"):
+                generation_mode = GenerationMode.REVISIT
+            else:
+                raise ValueError(
+                    "You've set `use_revisit`, which triggers revisit generate. Currently, revisit generate "
                     "is only supported with Greedy Search and Sample."
                 )
         return generation_mode
