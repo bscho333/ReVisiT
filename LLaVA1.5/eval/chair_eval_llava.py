@@ -37,6 +37,18 @@ def set_random_seed(seed):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if 'true' in v.strip().lower():
+        return True
+    elif 'false' in v.strip().lower():
+        return False
+    elif 'none' in v.strip().lower():
+        return None
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 def parse_args():
     parser = argparse.ArgumentParser(description="CHAIR on LLaVA")
     parser.add_argument("--model_path", type=str, help="model")
@@ -59,8 +71,8 @@ def parse_args():
     parser.add_argument("--max_new_tokens", type=int, default=64)
     parser.add_argument("--experiment_index", type=int, default=0)
 
-    parser.add_argument("--do_sample", action="store_true", help="sample")
-    parser.add_argument("--use_revisit", action="store_true", help="use revisit")
+    parser.add_argument("--do_sample", action=str2bool, help="sample")
+    parser.add_argument("--use_revisit", action=str2bool, help="use revisit")
     parser.add_argument("--early_exit_layers", type=str, default="last", help="early exit layers")
     parser.add_argument("--relative_top", type=float, default=1e-5, help="relative top")
 
@@ -75,7 +87,7 @@ async def main():
         output_path = args.output_path
     else:
         output_path = os.path.join(revisit_llava_path, "output", "chair")
-        os.makedirs(output_path, exist_ok=True)
+    os.makedirs(output_path, exist_ok=True)
     print("output_path: ", output_path)
     output_file = os.path.join(output_path, f"exp_{args.experiment_index}.jsonl")
 

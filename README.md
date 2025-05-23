@@ -1,5 +1,10 @@
 # ReVisiT
-
+```
+mkdir -p ./prerequisites
+mkdir -p ./prerequisites/coco
+wget http://images.cocodataset.org/zips/val2014.zip -P ./prerequisites/coco && unzip ./prerequisites/coco/val2014.zip -d ./prerequisites/coco &
+wget http://images.cocodataset.org/annotations/annotations_trainval2014.zip -P ./prerequisites/coco && unzip ./prerequisites/coco/annotations_trainval2014.zip -d ./data/coco &
+```
 ## LLaVA1.5
 ### Prerequisite
 ```
@@ -12,6 +17,6 @@ cd ../../..
 ```
 ### CHAIR Evaluation
 ```
-
+cd LLaVA1.5
+bash eval_chair_llava.sh
 ```
-## on Qwen2.5-VL
