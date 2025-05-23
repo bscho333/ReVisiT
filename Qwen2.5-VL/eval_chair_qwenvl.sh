@@ -1,12 +1,12 @@
 #!/bin/bash
 
 seed=42
-model="llava"
+model="qwenvl"
 exp_name="chair"
 dataset_name="coco"
 ####################################################################################################
 # Fill HERE with your own paths
-model_path="$PWD/../prerequisites/llava-v1.5-7b"
+model_path="$PWD/../prerequisites/Qwen2.5-VL-7B-Instruct"
 coco_path="$PWD/../prerequisites/coco"
 output_path="$PWD/output/chair"
 
