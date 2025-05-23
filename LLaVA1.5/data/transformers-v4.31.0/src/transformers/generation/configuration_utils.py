@@ -245,6 +245,11 @@ class GenerationConfig(PushToHubMixin):
         self.penalty_alpha = kwargs.pop("penalty_alpha", None)
         self.use_cache = kwargs.pop("use_cache", True)
 
+        self.use_revisit = kwargs.pop("use_revisit", False)
+        self.early_exit_layers = kwargs.pop("early_exit_layers", "last")
+        self.relative_top = kwargs.pop("relative_top", 1e-5)
+        self.image_tokens = kwargs.pop("image_tokens", None)
+
         # Parameters for manipulation of the model output logits
         self.temperature = kwargs.pop("temperature", 1.0)
         self.top_k = kwargs.pop("top_k", 50)
