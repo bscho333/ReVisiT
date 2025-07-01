@@ -20,9 +20,11 @@ import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
+import numpy as np
 import torch
 import torch.distributed as dist
 from torch import nn
+from torch.nn import functional as F
 
 from ..deepspeed import is_deepspeed_zero3_enabled
 from ..modeling_outputs import CausalLMOutputWithPast, Seq2SeqLMOutput
@@ -1497,12 +1499,11 @@ class GenerationMixin:
                 do_sample=generation_config.do_sample,
                 early_exit_layers=generation_config.early_exit_layers,
                 relative_top=generation_config.relative_top,
-                logits_processor=prepared_logits_processor,
-                stopping_criteria=prepared_stopping_criteria,
+                logits_processor=logits_processor,
+                stopping_criteria=stopping_criteria,
                 pad_token_id=generation_config.pad_token_id,
                 eos_token_id=generation_config.eos_token_id,
                 output_scores=generation_config.output_scores,
-                output_logits=generation_config.output_logits,
                 return_dict_in_generate=generation_config.return_dict_in_generate,
                 synced_gpus=synced_gpus,
                 streamer=streamer,

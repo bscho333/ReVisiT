@@ -29,7 +29,7 @@ Although the core ReVisiT decoding logic remains the same, these version-specifi
 
 If you wish to integrate ReVisiT into your own environment, simply add the corresponding decoding function to the Huggingface Transformers source code.
 Specifically, copy the code from:
-- For v4.31.0: [`LLaVA1.5/data/transformers-4.31.0/src/transformers/generation/utils.py` (lines 2472–2851)](https://github.com/bscho333/ReVisiT/blob/main/LLaVA1.5/data/transformers-v4.31.0/src/transformers/generation/utils.py#L2472-L2851)
+- For v4.31.0: [`LLaVA1.5/data/transformers-4.31.0/src/transformers/generation/utils.py` (lines 2473–2852)](https://github.com/bscho333/ReVisiT/blob/main/LLaVA1.5/data/transformers-v4.31.0/src/transformers/generation/utils.py#L2473-L2852)
 - For v4.50.0: [`Qwen2.5-VL/data/transformers-4.50.0/src/transformers/generation/utils.py` (lines 2579–2830)](https://github.com/bscho333/ReVisiT/blob/main/Qwen2.5-VL/data/transformers-v4.50.0/src/transformers/generation/utils.py#L2579-L2830)
 
 and paste it into your local `transformers/generation/utils.py`.

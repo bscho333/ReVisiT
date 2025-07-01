@@ -461,8 +461,6 @@ if __name__ == '__main__':
                         help="only use for regenerating CHAIR evaluator object, will be ignored if uses cached evaluator.")
     parser.add_argument("--save_path", type=str, default="",
                         help="saving CHAIR evaluate and results to json, useful for debugging the caption model.")
-    parser.add_argument("--exp_idx", type=int, default=None,
-                        help="saving CHAIR evaluate and results to json, useful for debugging the caption model.")
     
     args = parser.parse_args()
 

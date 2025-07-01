@@ -9,10 +9,11 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from PIL import Image
 
-revisit_llava_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(revisit_llava_path)
-sys.path.append(os.path.join(revisit_llava_path, 'data'))
+revisit_qwenvl_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(revisit_qwenvl_path)
+sys.path.append(os.path.join(revisit_qwenvl_path, 'data'))
 
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor
 from chair_loader import CHAIRDataset
@@ -65,10 +66,10 @@ def parse_args():
 
     parser.add_argument("--num_eval_samples", type=int, default=500)
     parser.add_argument("--max_new_tokens", type=int, default=64)
-    parser.add_argument("--experiment_index", type=int, default=0)
+    parser.add_argument("--exp_name", type=str, default='000')
 
-    parser.add_argument("--do_sample", action=str2bool, help="sample")
-    parser.add_argument("--use_revisit", action=str2bool, help="use revisit")
+    parser.add_argument("--do_sample", type=str2bool, default=False)
+    parser.add_argument("--use_revisit", type=str2bool, default=True)
     parser.add_argument("--early_exit_layers", type=str, default="all", help="early exit layers")
     parser.add_argument("--relative_top", type=float, default=1e-5, help="relative top")
 
@@ -82,10 +83,10 @@ async def main():
     if args.output_path is not None:
         output_path = args.output_path
     else:
-        output_path = os.path.join(revisit_llava_path, "output", "chair")
-    os.makedirs(output_path, exist_ok=True)
-    print("output_path: ", output_path)
-    output_file = os.path.join(output_path, f"exp_{args.experiment_index}.jsonl")
+        output_path = os.path.join(revisit_qwenvl_path, "output")
+    output_file = os.path.join(output_path, f"{args.exp_name}.jsonl")
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    print("output_file: ", output_file)
 
     model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         args.model_path,
@@ -162,14 +163,14 @@ async def main():
                 )
 
         generated_ids_trimmed = [
-            out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+            out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, output_ids)
         ]
         outputs = processor.batch_decode(
             generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
         )[0]
 
 
-        print(f"[VQA for ReVisiT]")
+        print(f"[VQA for {args.exp_name}]")
         print(f"V: {image_path}")
         print(f"Q: {qs}")
         print(f"A: {outputs}")

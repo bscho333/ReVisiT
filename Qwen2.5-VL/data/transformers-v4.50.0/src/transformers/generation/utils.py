@@ -2579,9 +2579,9 @@ class GenerationMixin:
     def _revisit_decoding(
         self,
         input_ids: torch.LongTensor,
-        image_tokens: Optional[torch.Tensor] = None,
-        early_exit_layers: Optional[str] = None,
-        relative_top: Optional[float] = None,
+        image_tokens: torch.Tensor,
+        early_exit_layers: str,
+        relative_top: float,
         logits_processor: LogitsProcessorList,
         stopping_criteria: StoppingCriteriaList,
         generation_config: GenerationConfig,
@@ -2780,7 +2780,7 @@ class GenerationMixin:
                 if output_scores:
                     scores += (next_token_scores,)
                 if output_logits:
-                    raw_logits += (final_layer_next_token_logits,)
+                    raw_logits += (outputs.logits[:, -1, :].detach().clone().float(),)
                 if output_attentions:
                     decoder_attentions += (
                         (outputs.decoder_attentions,) if self.config.is_encoder_decoder else (outputs.attentions,)

@@ -69,10 +69,10 @@ def parse_args():
 
     parser.add_argument("--num_eval_samples", type=int, default=500)
     parser.add_argument("--max_new_tokens", type=int, default=64)
-    parser.add_argument("--experiment_index", type=int, default=0)
+    parser.add_argument("--exp_name", type=str, default='000')
 
-    parser.add_argument("--do_sample", action=str2bool, help="sample")
-    parser.add_argument("--use_revisit", action=str2bool, help="use revisit")
+    parser.add_argument("--do_sample", type=str2bool, default=False)
+    parser.add_argument("--use_revisit", type=str2bool, default=True)
     parser.add_argument("--early_exit_layers", type=str, default="last", help="early exit layers")
     parser.add_argument("--relative_top", type=float, default=1e-5, help="relative top")
 
@@ -86,10 +86,10 @@ async def main():
     if args.output_path is not None:
         output_path = args.output_path
     else:
-        output_path = os.path.join(revisit_llava_path, "output", "chair")
-    os.makedirs(output_path, exist_ok=True)
-    print("output_path: ", output_path)
-    output_file = os.path.join(output_path, f"exp_{args.experiment_index}.jsonl")
+        output_path = os.path.join(revisit_llava_path, "output")
+    output_file = os.path.join(output_path, f"{args.exp_name}.jsonl")
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    print("output_file: ", output_file)
 
     disable_torch_init()
     model_path = os.path.expanduser(args.model_path)
@@ -175,7 +175,7 @@ async def main():
             outputs = outputs[:-len(stop_str)]
         outputs = outputs.strip()
 
-        print(f"[VQA for ReVisiT]")
+        print(f"[VQA for {args.exp_name}]")
         print(f"V: {image_path}")
         print(f"Q: {qs}")
         print(f"A: {outputs}")

@@ -2,26 +2,43 @@
 
 seed=42
 model="qwenvl"
-exp_name="chair"
+benchmark="chair"
 dataset_name="coco"
+
 ####################################################################################################
-# Fill HERE with your own paths
+#                                  Fill HERE with your own paths                                   #
 model_path="$PWD/../prerequisites/Qwen2.5-VL-7B-Instruct"
 coco_path="$PWD/../prerequisites/coco"
-output_path="$PWD/output/chair"
-
-# Arguments
+output_path="$PWD/../output"
+#                                                                                                  #
+####################################################################################################
+#                                           Arguments                                              #
 do_sample=False
 use_revisit=True
-experiment_index=000
+experiment_index=0
 max_new_tokens=512
+num_eval_samples=10
+#                                                                                                  #
 ####################################################################################################
+
 data_path="${coco_path}/val2014/"
 anno_path="${coco_path}/annotations/instances_val2014.json"
 
+exp_name="${benchmark}/${model}/s${seed}_m${max_new_tokens}_n${num_eval_samples}"
+if [ "${do_sample}" = "True" ]; then
+    exp_name="${exp_name}/sample"
+else
+    exp_name="${exp_name}/greedy"
+fi
+if [ "${use_revisit}" = "True" ]; then
+    exp_name="${exp_name}_revisit"
+fi
+exp_name="${exp_name}_${experiment_index}"
+echo "exp_name: ${exp_name}"
+
 echo "do_sample: ${do_sample}"
 echo "use_revisit: ${use_revisit}"
-torchrun --nnodes=1 --nproc_per_node=1 --master_port 2323 eval/${exp_name}_eval_${model}.py \
+torchrun --nnodes=1 --nproc_per_node=1 --master_port 2323 eval/${benchmark}_eval_${model}.py \
     --seed ${seed} \
     --model_path ${model_path} \
     --model_base ${model} \
@@ -30,16 +47,17 @@ torchrun --nnodes=1 --nproc_per_node=1 --master_port 2323 eval/${exp_name}_eval_
     --output_path ${output_path} \
     --do_sample ${do_sample} \
     --use_revisit ${use_revisit} \
-    --experiment_index ${experiment_index} \
-    --max_new_tokens ${max_new_tokens}
+    --exp_name ${exp_name} \
+    --max_new_tokens ${max_new_tokens} \
+    --num_eval_samples ${num_eval_samples}
 
 echo "Running chair.py"
-cap_json_path="${out_path}/exp_${experiment_index}.jsonl"
+cap_json_path="${out_path}/${exp_name}.jsonl"
 echo ${cap_json_path}
-python eval/chair.py \
+cd eval
+python chair.py \
     --cap_file ${cap_json_path} \
     --coco_path ${coco_path}/annotations \
-    --save_path ${output_path}/exp_${experiment_index}_result.jsonl \
+    --save_path ${output_path}/${exp_name}_result.jsonl \
     --image_id_key image_id \
-    --caption_key caption \
-    --exp_idx ${experiment_index} 
+    --caption_key caption
